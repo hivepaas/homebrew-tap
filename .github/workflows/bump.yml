@@ -12,12 +12,12 @@ on:
   workflow_dispatch:
     inputs:
       app:
-        description: "The app; all of them if empty"
+        description: "The app"
         type: choice
-        options: ["", packwing, shellwing]
-        required: false
+        options: [all, packwing, shellwing]
+        default: all
       version:
-        description: "A release (v0.2.0), with an app; empty for the stable one"
+        description: "A release (v0.2.0), with one app; empty for the stable one"
         required: false
 
 permissions:
@@ -36,22 +36,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        if: ${{ !inputs.app || inputs.app == matrix.app }}
+        if: ${{ !inputs.app || inputs.app == 'all' || inputs.app == matrix.app }}
 
       - name: Write the formula and the casks
         id: write
-        if: ${{ !inputs.app || inputs.app == matrix.app }}
+        if: ${{ !inputs.app || inputs.app == 'all' || inputs.app == matrix.app }}
         env:
           GH_TOKEN: ${{ github.token }}
           APP: ${{ matrix.app }}
-          VERSION: ${{ inputs.app && inputs.version || '' }}
+          VERSION: ${{ inputs.app == matrix.app && inputs.version || '' }}
         run: |
           version="$(python3 -I scripts/bump.py "$APP" ${VERSION:+"$VERSION"})"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           git diff --stat
 
       - name: Open a pull request
-        if: ${{ !inputs.app || inputs.app == matrix.app }}
+        if: ${{ !inputs.app || inputs.app == 'all' || inputs.app == matrix.app }}
         env:
           GH_TOKEN: ${{ github.token }}
           APP: ${{ matrix.app }}
