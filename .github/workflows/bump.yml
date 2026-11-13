@@ -1,0 +1,64 @@
+# Moves pkw and packwing to packwing's stable release, by a pull request.
+#
+# The stable release is the one packwing's apps update to (channels.stable in
+# release.json on packwing's release branch), so the tap follows a release
+# only once it is published and signed. Runs every three hours and by hand;
+# by hand, a version (v0.2.0) can be given.
+name: Bump
+
+on:
+  schedule:
+    - cron: "17 */3 * * *"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "A release (v0.2.0); empty for the stable one"
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: bump
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write the formula and the cask
+        id: write
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          version="$(python3 -I scripts/bump.py ${VERSION:+"$VERSION"})"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          git diff --stat
+
+      - name: Open a pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.write.outputs.version }}
+        run: |
+          if git diff --quiet; then
+            echo "Already at $VERSION."
+            exit 0
+          fi
+          branch="bump-$VERSION"
+          if git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+            echo "$branch is already open."
+            exit 0
+          fi
+          git switch -c "$branch"
+          git -c user.name="github-actions[bot]" \
+            -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -am "pkw, packwing $VERSION"
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "pkw, packwing $VERSION" \
+            --body "packwing [v$VERSION](https://github.com/hivepaas/packwing/releases/tag/v$VERSION) is the stable release. Written by scripts/bump.py from the release's SHA-256 digests; Tests runs on this branch."
+          gh workflow run tests.yml --ref "$branch"

@@ -1,0 +1,51 @@
+# Audits the formula and the cask, installs them and runs their tests, on
+# each system Homebrew runs on.
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  # Run by Bump on the pull requests it opens, which a pull_request event
+  # from GITHUB_TOKEN would not start.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  style:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Homebrew/actions/setup-homebrew@main
+      - run: brew style hivepaas/tap
+
+  formula:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-15-intel, ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: Homebrew/actions/setup-homebrew@main
+      - run: brew audit --strict --online --formula hivepaas/tap/pkw
+      - run: brew install --formula hivepaas/tap/pkw
+      - run: brew test hivepaas/tap/pkw
+      - run: brew uninstall --formula hivepaas/tap/pkw
+
+  cask:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: Homebrew/actions/setup-homebrew@main
+      - run: brew audit --strict --online --cask hivepaas/tap/packwing
+      - run: brew install --cask hivepaas/tap/packwing
+      - run: /Applications/Packwing.app/Contents/MacOS/pkw --version
+      - run: brew uninstall --cask hivepaas/tap/packwing
