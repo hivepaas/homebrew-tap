@@ -35,7 +35,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ inputs.version }}
         run: |
-          version="$(python3 -I scripts/bump.py $VERSION)"
+          version="$(python3 -I scripts/bump.py ${VERSION:+"$VERSION"})"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           git diff --stat
 
