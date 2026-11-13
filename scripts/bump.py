@@ -35,7 +35,7 @@ APPS = {
             "app_aarch64": "packwing_{version}_macos_aarch64.app.tar.gz",
             "app_x86_64": "packwing_{version}_macos_x86_64.app.tar.gz",
         },
-        "writes": {"Formula/pkw.rb": "pkw.rb", "Casks/packwing.rb": "packwing.rb"},
+        "writes": {"Formula/pkw.rb": "pkw.rb.in", "Casks/packwing.rb": "packwing.rb.in"},
     },
     "shellwing": {
         "repo": "hivepaas/shellwing",
@@ -43,7 +43,7 @@ APPS = {
             "aarch64": "shellwing_{version}_macos_aarch64.app.tar.gz",
             "x86_64": "shellwing_{version}_macos_x86_64.app.tar.gz",
         },
-        "writes": {"Casks/shellwing.rb": "shellwing.rb"},
+        "writes": {"Casks/shellwing.rb": "shellwing.rb.in"},
     },
 }
 
