@@ -1,14 +1,11 @@
 class Pkw < Formula
-  desc "Fast, safe archiver for the command line: ZIP, 7z, RAR, tar and more"
-  homepage "https://packwing.app"
-  version "0.1.0"
+  desc "Fast, safe command-line archiver: ZIP, 7z, RAR, tar and more"
+  homepage "https://packwing.app/"
   license "GPL-3.0-or-later"
 
   livecheck do
-    url "https://raw.githubusercontent.com/hivepaas/packwing/release/release.json"
-    strategy :json do |json|
-      json.dig("channels", "stable")&.delete_prefix("v")
-    end
+    url :stable
+    strategy :github_latest
   end
 
   on_macos do

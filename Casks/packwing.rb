@@ -8,7 +8,7 @@ cask "packwing" do
   url "https://github.com/hivepaas/packwing/releases/download/v#{version}/packwing_#{version}_macos_#{arch}.app.tar.gz"
   name "packwing"
   desc "File archiver that uses every core and opens archives safely"
-  homepage "https://packwing.app"
+  homepage "https://packwing.app/"
 
   livecheck do
     url "https://raw.githubusercontent.com/hivepaas/packwing/release/release.json"
