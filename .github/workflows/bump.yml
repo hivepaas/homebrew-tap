@@ -1,9 +1,9 @@
-# Moves pkw and packwing to packwing's stable release, by a pull request.
+# Moves each app's formula and casks to its stable release, by a pull request.
 #
-# The stable release is the one packwing's apps update to (channels.stable in
-# release.json on packwing's release branch), so the tap follows a release
-# only once it is published and signed. Runs every three hours and by hand;
-# by hand, a version (v0.2.0) can be given.
+# The stable release is the one the app itself updates to (channels.stable in
+# release.json on its repository's release branch), so the tap follows a
+# release only once it is published and signed. Runs every three hours and by
+# hand; by hand, one app and a version (v0.2.0) can be given.
 name: Bump
 
 on:
@@ -11,8 +11,13 @@ on:
     - cron: "17 */3 * * *"
   workflow_dispatch:
     inputs:
+      app:
+        description: "The app"
+        type: choice
+        options: [all, packwing, shellwing]
+        default: all
       version:
-        description: "A release (v0.2.0); empty for the stable one"
+        description: "A release (v0.2.0), with one app; empty for the stable one"
         required: false
 
 permissions:
@@ -20,35 +25,43 @@ permissions:
   pull-requests: write
   actions: write
 
-concurrency:
-  group: bump
-
 jobs:
   bump:
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [packwing, shellwing]
+    concurrency:
+      group: bump-${{ matrix.app }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        if: ${{ !inputs.app || inputs.app == 'all' || inputs.app == matrix.app }}
 
-      - name: Write the formula and the cask
+      - name: Write the formula and the casks
         id: write
+        if: ${{ !inputs.app || inputs.app == 'all' || inputs.app == matrix.app }}
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ inputs.version }}
+          APP: ${{ matrix.app }}
+          VERSION: ${{ inputs.app == matrix.app && inputs.version || '' }}
         run: |
-          version="$(python3 -I scripts/bump.py ${VERSION:+"$VERSION"})"
+          version="$(python3 -I scripts/bump.py "$APP" ${VERSION:+"$VERSION"})"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           git diff --stat
 
       - name: Open a pull request
+        if: ${{ !inputs.app || inputs.app == 'all' || inputs.app == matrix.app }}
         env:
           GH_TOKEN: ${{ github.token }}
+          APP: ${{ matrix.app }}
           VERSION: ${{ steps.write.outputs.version }}
         run: |
           if git diff --quiet; then
-            echo "Already at $VERSION."
+            echo "$APP is already at $VERSION."
             exit 0
           fi
-          branch="bump-$VERSION"
+          branch="bump-$APP-$VERSION"
           if git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
             echo "$branch is already open."
             exit 0
@@ -56,9 +69,9 @@ jobs:
           git switch -c "$branch"
           git -c user.name="github-actions[bot]" \
             -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-            commit -am "pkw, packwing $VERSION"
+            commit -am "$APP $VERSION"
           git push origin "$branch"
           gh pr create --base main --head "$branch" \
-            --title "pkw, packwing $VERSION" \
-            --body "packwing [v$VERSION](https://github.com/hivepaas/packwing/releases/tag/v$VERSION) is the stable release. Written by scripts/bump.py from the release's SHA-256 digests; Tests runs on this branch."
+            --title "$APP $VERSION" \
+            --body "$APP [v$VERSION](https://github.com/hivepaas/$APP/releases/tag/v$VERSION) is the stable release. Written by scripts/bump.py from the release's SHA-256 digests; Tests runs on this branch."
           gh workflow run tests.yml --ref "$branch"

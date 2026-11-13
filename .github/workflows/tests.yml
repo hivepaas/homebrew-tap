@@ -42,10 +42,22 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, macos-15-intel]
+        include:
+          - { cask: packwing, app: Packwing.app }
+          - { cask: shellwing, app: shellwing.app }
+        cask: [packwing, shellwing]
+    name: cask ${{ matrix.cask }} (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    env:
+      CASK: hivepaas/tap/${{ matrix.cask }}
+      APP: /Applications/${{ matrix.app }}
     steps:
       - uses: Homebrew/actions/setup-homebrew@main
-      - run: brew audit --strict --online --cask hivepaas/tap/packwing
-      - run: brew install --cask hivepaas/tap/packwing
-      - run: /Applications/Packwing.app/Contents/MacOS/pkw --version
-      - run: brew uninstall --cask hivepaas/tap/packwing
+      - run: brew audit --strict --online --cask "$CASK"
+      - run: brew install --cask "$CASK"
+      # In Applications, signed by the team that signed the release.
+      - run: codesign --verify --deep --strict --verbose=2 "$APP"
+      - if: matrix.cask == 'packwing'
+        run: '"$APP/Contents/MacOS/pkw" --version'
+      - run: brew uninstall --cask "$CASK"
+      - run: test ! -e "$APP"
