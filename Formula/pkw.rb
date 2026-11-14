@@ -10,23 +10,23 @@ class Pkw < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/hivepaas/packwing/releases/download/v0.1.0/pkw_0.1.0_macos_aarch64.tar.gz"
-      sha256 "3972f3eb8dfb1b97061243446fdc58f7876dbd248fa240be1d54ae84f63b1175"
+      url "https://github.com/hivepaas/packwing/releases/download/v0.2.0/pkw_0.2.0_macos_aarch64.tar.gz"
+      sha256 "04bc9e97c19129310c942d73c16f514ed1c8b0ceae952d4276b49f57969dd530"
     end
     on_intel do
-      url "https://github.com/hivepaas/packwing/releases/download/v0.1.0/pkw_0.1.0_macos_x86_64.tar.gz"
-      sha256 "3fb30811479a55e31cb89b40e73ad3b591bc98abad882a2dc3aac84bc72399c0"
+      url "https://github.com/hivepaas/packwing/releases/download/v0.2.0/pkw_0.2.0_macos_x86_64.tar.gz"
+      sha256 "894c6aacb74ead83ca2ff7dac35844d2bb32cea4a36d9781a25a4a53a5b4c91f"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/hivepaas/packwing/releases/download/v0.1.0/pkw_0.1.0_linux_aarch64.tar.gz"
-      sha256 "bc73c7f867fae033ae9db6e029fc0281edbd609ecb3d8934cdd53d46495d0de9"
+      url "https://github.com/hivepaas/packwing/releases/download/v0.2.0/pkw_0.2.0_linux_aarch64.tar.gz"
+      sha256 "294867380ce596274b3c1c337b8b61e5e2b664eb0a5286a39dc8f22ffd4e453c"
     end
     on_intel do
-      url "https://github.com/hivepaas/packwing/releases/download/v0.1.0/pkw_0.1.0_linux_x86_64.tar.gz"
-      sha256 "e8bc3cc5d1237522b069371ab4107fb4321a6de12322ce3709bff65a79e5eaec"
+      url "https://github.com/hivepaas/packwing/releases/download/v0.2.0/pkw_0.2.0_linux_x86_64.tar.gz"
+      sha256 "44085f65a3226eb818640c0b1068e04eb91aaaae2386254b31ee701cfb21af6f"
     end
   end
 
