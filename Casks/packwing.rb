@@ -1,9 +1,9 @@
 cask "packwing" do
   arch arm: "aarch64", intel: "x86_64"
 
-  version "0.2.0"
-  sha256 arm:   "c075d47c5f494699516083ec9d9b91fb5eb2cbd2084e455b2ea62f8fa04870ed",
-         intel: "91f096224ce471f1082c3363e939aa8a38a99dd704f68ee67586b1d67d1d7452"
+  version "0.3.0"
+  sha256 arm:   "22923ee78f054d3b51806c1453c108fb12e0565b20debdfb1cd5b07e30fb80d9",
+         intel: "7373f80ccec7f155e0fd6be58cc3d6fd9e6b1d42f4a887acecd17bd94f1dd40e"
 
   url "https://github.com/hivepaas/packwing/releases/download/v#{version}/packwing_#{version}_macos_#{arch}.app.tar.gz"
   name "packwing"
