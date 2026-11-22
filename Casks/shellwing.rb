@@ -1,9 +1,9 @@
 cask "shellwing" do
   arch arm: "aarch64", intel: "x86_64"
 
-  version "0.2.1"
-  sha256 arm:   "3ceecd7f723f42290e55ab3923bc396899c6e7626565fce12040ec66e941bdd1",
-         intel: "bc3ebf9c4c28e35b506010165514a5a90de554d6dd7d9367f156850cb966975b"
+  version "0.3.0"
+  sha256 arm:   "bca79a9eedd5df58353e7576998a34964f60edf0d71f045c70f200b8dd4922f0",
+         intel: "dee2214bd9fcc4807b79f8d3e5cc525d8524d5cbb930e021c3a196f0dea80644"
 
   url "https://github.com/hivepaas/shellwing/releases/download/v#{version}/shellwing_#{version}_macos_#{arch}.app.tar.gz"
   name "shellwing"
